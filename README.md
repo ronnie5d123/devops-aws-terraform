@@ -51,6 +51,25 @@ Each module contains its own `main.tf`, `variables.tf`, and `outputs.tf` files.
 
 The project currently uses the AWS provider in the `~> 6.0` version range and deploys to `us-east-1`.
 
+## SSH Public Key Configuration
+
+The EC2 key pair is configured through the required Terraform variable `public_key`. The public key is read locally and passed to Terraform at plan/apply time; private SSH keys must never be committed to the repository.
+
+For Git Bash, use your existing public key:
+
+```bash
+terraform plan -var="public_key=$(cat ~/.ssh/devops-aws-project.pub)"
+```
+
+Review the proposed changes before applying:
+
+```bash
+terraform apply -var="public_key=$(cat ~/.ssh/devops-aws-project.pub)"
+```
+
+These commands assume the public key file exists at the specified path. If you use a different key, provide the corresponding public-key value instead.
+
+
 ## Deployment
 
 Clone the repository and enter the project directory:
@@ -131,6 +150,7 @@ Additional verification includes:
 - Verifying S3 public-access blocking, encryption, ownership controls, and versioning.
 - Testing S3 versioning by uploading multiple versions of an object.
 - Using Terraform `moved` blocks to reorganize resources into modules without recreating existing infrastructure.
+- GitHub Actions automatically checks Terraform formatting, initializes the configuration without configuring a remote backend, and validates the Terraform configuration on pushes and pull requests targeting main or master.
 
 ## Cost Considerations
 
